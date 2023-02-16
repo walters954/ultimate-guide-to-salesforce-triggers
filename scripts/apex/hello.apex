@@ -6,8 +6,9 @@
 //     SFDX: Execute Anonymous Apex with Editor Contents
 
 Opportunity opp = new Opportunity(
-    Name = 'Anon Opp with Amount Preset',
+    Name = 'Opportunity Trigger Insert ',
     StageName = 'Prospecting',
     CloseDate = System.today(),
-    Amount = 10);
+    Amount = 10000,
+    Pricebook2Id = '01s4x000005pjqTAAQ');
 insert opp;
