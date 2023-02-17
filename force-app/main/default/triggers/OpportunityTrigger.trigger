@@ -45,11 +45,24 @@ trigger OpportunityTrigger on Opportunity (before insert, after insert, before u
                     Product2Id = '01t4x0000020maiAAA'));
                 
             }
-                       
+                
         }else if (Trigger.isUpdate){
             System.debug('OpportunityTrigger After Update');
         }
 
         insert oppLineItems; 
+    }
+
+    private static void notifyOwnersOpportunityDeleted(List<Opportunity> opps) {
+        List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
+        for (Opportunity opp : opps){
+            Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+            String[] toAddresses = new String[] {[SELECT Id, Email FROM User WHERE Id = :opp.OwnerId].Email}; // SOQL in for loop - bulkify
+            mail.setToAddresses(toAddresses);
+            mail.setSubject('Opportunity Deleted : ' + opp.Name);
+            mail.setPlainTextBody('Your Opportunity: ' + opp.Name +' has been deleted.');
+            mails.add(mail);
+        }        
+        Messaging.sendEmail(mails);
     }
 }
