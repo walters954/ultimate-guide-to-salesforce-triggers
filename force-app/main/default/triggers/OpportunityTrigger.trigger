@@ -1,7 +1,5 @@
-trigger OpportunityTrigger on Opportunity (before insert, after insert, before update, after update) {
+trigger OpportunityTrigger on Opportunity (before insert, after insert, before update, after update, before delete, after delete) {
     System.debug('OpportunityTrigger:::' + Trigger.operationType);
-    System.debug('Trigger Size:' + Trigger.new.size());
-    
     
     if (Trigger.isBefore){
         if (Trigger.isInsert){
@@ -28,8 +26,13 @@ trigger OpportunityTrigger on Opportunity (before insert, after insert, before u
                 
             }
         }
-        
-        
+        else if (Trigger.isDelete){
+            for (Opportunity oldOpp : Trigger.old){
+                if (oldOpp.IsClosed){
+                    oldOpp.addError('Cannot delete closed won opportunity');
+                }
+            }
+        }
     }
 
     List<OpportunityLineItem> oppLineItems = new List<OpportunityLineItem>();
@@ -48,10 +51,15 @@ trigger OpportunityTrigger on Opportunity (before insert, after insert, before u
                 
         }else if (Trigger.isUpdate){
             System.debug('OpportunityTrigger After Update');
+        } 
+        else if (Trigger.isDelete){
+            notifyOwnersOpportunityDeleted(Trigger.old);
         }
 
         insert oppLineItems; 
     }
+
+    
 
     private static void notifyOwnersOpportunityDeleted(List<Opportunity> opps) {
         List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
