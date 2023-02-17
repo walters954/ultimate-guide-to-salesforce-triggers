@@ -1,6 +1,6 @@
 trigger OpportunityTrigger on Opportunity (before insert, after insert, before update, after update, before delete, after delete) {
     System.debug('OpportunityTrigger:::' + Trigger.operationType);
-    
+
     if (Trigger.isBefore){
         if (Trigger.isInsert){
             System.debug('OpportunityTrigger Before Insert');
@@ -59,7 +59,14 @@ trigger OpportunityTrigger on Opportunity (before insert, after insert, before u
         insert oppLineItems; 
     }
 
-    
+    private static void assignAccountToOpportunity(List<Opportunity> opps) {
+        for (Opportunity opp : opps){
+            if (opp.AccountId == null){
+                opp.AccountId = accts[0].Id; //assign random account
+            }
+        }
+        update opps;
+    }
 
     private static void notifyOwnersOpportunityDeleted(List<Opportunity> opps) {
         List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
