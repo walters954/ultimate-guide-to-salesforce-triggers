@@ -1,4 +1,7 @@
-trigger OpportunityTrigger on Opportunity (before insert, after insert, before update, after update, before delete, after delete) {
+trigger OpportunityTrigger on Opportunity (before insert, after insert, 
+                                            before update, after update, 
+                                            before delete, after delete, 
+                                            after undelete) {
     System.debug('OpportunityTrigger:::' + Trigger.operationType);
 
     if (Trigger.isBefore){
@@ -48,24 +51,31 @@ trigger OpportunityTrigger on Opportunity (before insert, after insert, before u
                     Product2Id = '01t4x0000020maiAAA'));
                 
             }
-                
+            insert oppLineItems; 
         }else if (Trigger.isUpdate){
             System.debug('OpportunityTrigger After Update');
         } 
         else if (Trigger.isDelete){
             notifyOwnersOpportunityDeleted(Trigger.old);
         }
-
-        insert oppLineItems; 
+        else if (Trigger.isUndelete){
+            assignAccountToOpportunity(Trigger.newMap);
+        }
     }
 
-    private static void assignAccountToOpportunity(List<Opportunity> opps) {
-        for (Opportunity opp : opps){
+    
+
+    private static void assignAccountToOpportunity(Map<Id,Opportunity> oppNewMap) {
+        List<Account> accts = [SELECT Id FROM Account];
+        Map<Id, Opportunity> oppMap = new Map<Id, Opportunity>();
+        for (Opportunity opp : oppNewMap.values()){
             if (opp.AccountId == null){
-                opp.AccountId = accts[0].Id; //assign random account
+                Opportunity oppToUpdate = new Opportunity(Id = opp.Id); //create temp opportunity
+                oppToUpdate.AccountId = accts[0].Id; //assign random account
+                oppMap.put(opp.Id, oppToUpdate);
             }
         }
-        update opps;
+        update oppMap.values();
     }
 
     private static void notifyOwnersOpportunityDeleted(List<Opportunity> opps) {
