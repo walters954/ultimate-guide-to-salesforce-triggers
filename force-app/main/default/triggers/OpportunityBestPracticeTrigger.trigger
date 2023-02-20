@@ -6,7 +6,7 @@ trigger OpportunityBestPracticeTrigger on Opportunity (before update) {
             System.debug('old Opp: ' + oppOld.Id + ' Amount ' + oppOld.Amount);
             if (oppNew.Amount != oppOld.Amount && oppNew.Id == oppOld.Id){
                 System.debug('Found matching old and new opps');
-                Account accountFromOpp = [SELECT Id FROM Account WHERE Id = :oppNew.AccountId];
+                Account accountFromOpp = [SELECT Id, NumberOfEmployees  FROM Account WHERE Id = :oppNew.AccountId];
                 oppNew.Cost_Per_Employee__c = costPerEmployee(oppNew, accountFromOpp);
             }
         }
@@ -17,6 +17,7 @@ trigger OpportunityBestPracticeTrigger on Opportunity (before update) {
         if (opp.Amount != null && acc.NumberOfEmployees != null){
             costPerEmployee = opp.Amount / acc.NumberOfEmployees;
         }
+        System.debug('Cost per employee: ' + costPerEmployee);
         return costPerEmployee;
     }
 }
