@@ -1,1 +1,1 @@
-update new Opportunity(Id = '0064x00000KSnfzAAD', Amount = 1000000);
+System.debug(StarWarsCallout.makeGetCallout());
