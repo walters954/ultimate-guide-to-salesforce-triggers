@@ -11,4 +11,9 @@ public with sharing class StarWarsCallout {
         }
         return '';
     }
+
+    @future (callout = true)
+    public static void makeGetCalloutFuture() {
+        makeGetCallout();
+    }
 }
