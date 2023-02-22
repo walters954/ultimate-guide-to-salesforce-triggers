@@ -5,28 +5,4 @@ trigger OpportunityTrigger on Opportunity (before insert, after insert,
 
     OpportunityTriggerHandler handler = new OpportunityTriggerHandler();
     handler.run();
-
-    if (Trigger.isBefore){
-        if (Trigger.isInsert){
-        }
-        else if (Trigger.isUpdate){
-        }
-        else if (Trigger.isDelete){
-        }
-    }
-
-    
-    if (Trigger.isAfter){
-        if (Trigger.isInsert){
-            
-        }else if (Trigger.isUpdate){
-            
-        } 
-        else if (Trigger.isDelete){
-            
-        }
-        else if (Trigger.isUndelete){
-            
-        }
-    }
 }
